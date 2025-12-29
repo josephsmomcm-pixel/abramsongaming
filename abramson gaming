@@ -1,0 +1,162 @@
+# Create main folder
+mkdir abramsongaming
+cd abramsongaming
+
+# Create backend folder and files
+mkdir -p backend/prisma backend/routes
+cd backend
+
+# Create package.json
+cat > package.json << 'EOF'
+{
+  "name": "abramsongaming-backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "stripe": "^14.9.0",
+    "body-parser": "^1.20.2",
+    "@prisma/client": "^5.7.0"
+  }
+}
+EOF
+
+# Create server.js
+cat > server.js << 'EOF'
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy' });
+});
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server on port ${PORT}`);
+});
+EOF
+
+# Create basic Prisma schema
+cat > prisma/schema.prisma << 'EOF'
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String @id @default(uuid())
+  email String @unique
+}
+EOF
+
+# Go to frontend
+cd ..
+mkdir -p frontend/public frontend/src
+
+cd frontend
+
+# Create package.json
+cat > package.json << 'EOF'
+{
+  "name": "abramsongaming-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  }
+}
+EOF
+
+# Create index.html
+cat > public/index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Abramson Gaming</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+EOF
+
+# Create index.js
+cat > src/index.js << 'EOF'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+EOF
+
+# Create App.js
+cat > src/App.js << 'EOF'
+function App() {
+  return (
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #667eea, #764ba2)',
+      color: 'white',
+      fontFamily: 'system-ui'
+    }}>
+      <div style={{ textAlign: 'center' }}>
+        <h1 style={{ fontSize: '4rem' }}>🎮</h1>
+        <h1>Abramson Gaming</h1>
+        <p>Your Ultimate Gaming Hub</p>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+EOF
+
+# Go back to root
+cd ..
+
+# Create README
+cat > README.md << 'EOF'
+# Abramson Gaming
+
+Gaming platform management system
+EOF
+
+# Create .gitignore
+cat > .gitignore << 'EOF'
+node_modules/
+.env
+*.log
+.DS_Store
+build/
+EOF
+
+# Initialize Git
+git init
+git add .
+git commit -m "Initial commit"
